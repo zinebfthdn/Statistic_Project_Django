@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculs sur les valeurs</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* Styles généraux */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Conteneur principal */
+        .container {
+            width: 70%;
+            margin: 0 auto;
+            padding: 40px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 40px;
+        }
+
+        /* Titre principal */
+        h1 {
+            font-size: 2.2rem;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 40px;
+            font-weight: bold;
+        }
+
+        /* Retour à l'accueil */
+        .back-button {
+            text-decoration: none;
+            font-size: 1rem;
+            color: #2980b9;
+            margin-bottom: 20px;
+            display: inline-block;
+            padding: 10px 15px;
+            border-radius: 5px;
+            background-color: #ecf0f1;
+            transition: background-color 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: #bdc3c7;
+        }
+
+        /* Formulaire */
+        label {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            display: block;
+            color: #555;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            border: 2px solid #bdc3c7;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #2980b9;
+        }
+
+        input[type="submit"] {
+            padding: 12px;
+            font-size: 1.2rem;
+            background-color: #2980b9;
+            border: 2px solid #2980b9;
+            color: white;
+            border-radius: 6px;
+            width: 30%;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #3498db;
+        }
+
+        /* Résultats */
+        .results {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+
+        .results h2 {
+            color: #2980b9;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .results table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .results table th,
+        .results table td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+            font-size: 1.1rem;
+        }
+
+        .results table th {
+            background-color: #2980b9;
+            color: white;
+        }
+
+        .results table td {
+            background-color: #ecf0f1;
+        }
+
+        .results table tr:nth-child(even) td {
+            background-color: #f1f1f1;
+        }
+
+        .results table tr:hover td {
+            background-color: #e0e0e0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .results h2 {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav style="background-color: #2c3e50; color: #ffffff; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0; color: #ffffff;">Statistiques et Tests</h3>
+        <div>
+            <a href="{% url 'app' %}" style="color: #ffffff; text-decoration: none; margin-right: 20px; font-weight: bold;">Home</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}" style="color: #ffffff; text-decoration: none; font-weight: bold;">Déconnexion</a>
+            {% else %}
+                <a href="{% url 'login' %}" style="color: #ffffff; text-decoration: none; font-weight: bold;">Connexion</a>
+            {% endif %}
+        </div>
+    </nav>
+<div class="container">
+
+    <h1>Tendances centrales/variabilités</h1>
+
+    <form method="post" onsubmit="return validateForm()">
+        {% csrf_token %}
+        <label for="valeurs">Saisissez les valeurs en les séparant par "," ou ";" :</label>
+        <input type="text" id="valeurs" name="valeurs" placeholder="1; 2; 3; 4" {% if form.valeurs.value %}value="{{ form.valeurs.value }}"{% endif %}>
+
+        <input type="submit" value="Calculer">
+    </form>
+
+    <script>
+        function validateForm() {
+            var valeursInput = document.getElementById("valeurs");
+            var valeurs = valeursInput.value.split(/[;,]+/);
+
+            for (var i = 0; i < valeurs.length; i++) {
+                var valeur = valeurs[i].trim();
+
+                if (valeur.includes(" ")) {
+                    alert("Erreur : Evitez l'espace. Utilisez (,) ou (;) ");
+                    return false;
+                }
+
+                if (isNaN(parseFloat(valeur))) {
+                    alert("Erreur : Utilisez (,) ou (;)");
+                    return false;
+                }
+            }
+            return true;
+        }
+    </script>
+
+    {% if mean is not None %}
+    <div class="results">
+        <h2>Résultats :</h2>
+        <table>
+            <tr>
+                <th>Moyenne</th>
+                <td>{{ mean }}</td>
+            </tr>
+            <tr>
+                <th>Médiane</th>
+                <td>{{ median }}</td>
+            </tr>
+            <tr>
+                <th>Mode</th>
+                <td>{{ mode }}</td>
+            </tr>
+            <tr>
+                <th>Variance</th>
+                <td>{{ variance }}</td>
+            </tr>
+            <tr>
+                <th>Ecart-type</th>
+                <td>{{ stdev }}</td>
+            </tr>
+            <tr>
+                <th>Etendue</th>
+                <td>{{ range }}</td>
+            </tr>
+        </table>
+    </div>
+    {% endif %}
+</div>
+
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
+    <style>
+        /* Styles généraux */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Conteneur principal */
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 40px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+
+        /* Titre principal */
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+        }
+
+        /* Section contenant le formulaire */
+        .section {
+            background-color: #f9f9f9;
+            margin-bottom: 40px;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Titre de la section */
+        .section h2 {
+            font-size: 1.8rem;
+            color: #2980b9;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Conteneur du formulaire */
+        .tools__container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        /* Style pour chaque bouton et champ de saisie */
+        .tools__item {
+            background-color: #ffffff;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            width: 100%;
+            max-width: 500px;
+            transition: transform 0.3s, background-color 0.3s ease;
+        }
+
+        .tools__item:hover {
+            transform: translateY(-5px);
+            background-color: #f1f1f1;
+        }
+
+        .tools__item a {
+            color: #2980b9;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: block;
+            margin-top: 10px;
+            transition: color 0.3s ease;
+        }
+
+        .tools__item a:hover {
+            color: #3498db;
+        }
+
+        /* Style pour le bouton et le champ de fichier */
+        input[type="file"] {
+            padding: 20px;
+            font-size: 1rem;
+            background-color: #2980b9;
+            border: 2px solid #2980b9;
+            color: white;
+            border-radius: 20px;
+            width: 100%;
+            margin-top: 20px;
+            display: none;
+        }
+
+        /* Style du bouton "Upload" */
+        #uploadButton {
+            margin-top: 10px;
+            padding: 15px;
+            font-size: 1.2rem;
+            background-color: #2980b9;
+            border: 2px solid #2980b9;
+            color: white;
+            border-radius: 20px;
+            width: 30%;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #uploadButton:hover {
+            background-color: #3498db;
+        }
+
+        /* Style des boutons supplémentaires */
+        button {
+            margin-top: 20px;
+            padding: 15px;
+            font-size: 1rem;
+            background-color: #2980b9;
+            border: 2px solid #2980b9;
+            color: white;
+            border-radius: 20px;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #3498db;
+        }
+
+        /* Conteneur pour les deux boutons */
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        /* Style des deux boutons */
+        .button-container button {
+            width: 48%; /* Pour avoir les deux boutons côte à côte */
+        }
+
+        /* Style spécifique au bouton "Retour" */
+        .back-button {
+            text-align: center;
+            padding: 15px;
+            font-size: 1.2rem;
+            background-color: #2c3e50;
+            color: white;
+            border-radius: 20px;
+            display: block;
+            text-decoration: none;
+            width: 100%;
+            text-align: center;
+        }
+
+        .back-button:hover {
+            background-color: #34495e;
+        }
+    </style>
+</head>
+<body>
+    <nav style="background-color: #2c3e50; color: #ffffff; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0; color: #ffffff;">Statistiques et Tests</h3>
+        <div>
+            <a href="{% url 'app' %}" style="color: #ffffff; text-decoration: none; margin-right: 20px; font-weight: bold;">Home</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}" style="color: #ffffff; text-decoration: none; font-weight: bold;">Déconnexion</a>
+            {% else %}
+                <a href="{% url 'login' %}" style="color: #ffffff; text-decoration: none; font-weight: bold;">Connexion</a>
+            {% endif %}
+        </div>
+    </nav>
+<div class="container">
+    <!-- Partie 1 : Retour -->
+   
+
+    <!-- Partie 2 : Formulaire pour charger un fichier CSV -->
+    <div class="section">
+        <h2>Charger un fichier CSV</h2>
+        <form method="post" enctype="multipart/form-data" action="{% url 'csv' %}" id="fileUploadForm">
+            {% csrf_token %}
+            <div class="tools__container">
+                <button type="button" id="uploadButton">Télécharger</button>
+                <input type="file" name="file" id="id_file" accept=".csv">
+            </div>
+
+            <div class="button-container">
+                <!-- These buttons will appear when a file is selected -->
+                <button type="submit" id="visualiserButton" style="display: none;">Visualiser</button>
+                <button type="button" id="parcourirButton" style="display: none;">Parcourir</button>
+            </div>
+        </form>
+    </div>
+
+
+<script>
+    // Show the file input when the "Upload" button is clicked
+    document.getElementById('uploadButton').addEventListener('click', function () {
+        document.getElementById('id_file').click(); // Open the file input dialog
+    });
+
+    document.getElementById('id_file').addEventListener('change', function () {
+        // If a file is selected, both buttons ("Visualiser" and "Parcourir") will be displayed
+        document.getElementById('visualiserButton').style.display = 'inline-block';
+        document.getElementById('parcourirButton').style.display = 'inline-block';
+    });
+
+    // Handle the "Visualiser" button click
+    document.getElementById('visualiserButton').addEventListener('click', function () {
+        // Redirect to the visualisation page after clicking "Visualiser"
+        window.location.href = "{% url 'visualiser_chart' %}";
+    });
+
+    // Handle the "Parcourir" button click
+    document.getElementById('parcourirButton').addEventListener('click', function () {
+        // Redirect to the "Parcourir" page after clicking "Parcourir"
+        window.location.href = "{% url 'parcourir_chart' %}";
+    });
+</script>
+</div>
+</body>
+</html>

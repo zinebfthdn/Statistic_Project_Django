@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistiques et Tests</title>
+    <style>
+        /* Styles généraux */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        /* Conteneur principal */
+        .container {
+            width: 85%;
+            margin: 0 auto;
+            padding: 40px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+
+        /* Titre principal */
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+        }
+
+        /* Section contenant chaque groupe */
+        .section {
+            background-color: #f9f9f9;
+            margin-bottom: 40px;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Titre de chaque section */
+        .section h2 {
+            font-size: 1.8rem;
+            color: #2980b9;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Conteneur des outils */
+        .tools__container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        /* Style pour chaque outil */
+        .tools__item {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, background-color 0.3s ease;
+        }
+
+        .tools__item:hover {
+            transform: translateY(-5px);
+            background-color: #f1f1f1;
+        }
+
+        .tools__item a {
+            color: #2980b9; /* Bleu principal */
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: block;
+            margin-top: 10px;
+            transition: color 0.3s ease;
+        }
+
+        .tools__item a:hover {
+            color: #3498db; /* Bleu plus clair au survol */
+        }
+
+        /* Responsive design pour petits écrans */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .tools__item a {
+                font-size: 1rem;
+            }
+
+            .tools__container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tools__container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav style="background-color: #2c3e50; color: #ffffff; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0; color: #ffffff;">Statistiques et Tests</h3>
+        <div>
+            <a href="{% url 'app' %}" style="color: #ffffff; text-decoration: none; margin-right: 20px; font-weight: bold;">Home</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}" style="color: #ffffff; text-decoration: none; font-weight: bold;">Déconnexion</a>
+            {% else %}
+                <a href="{% url 'login' %}" style="color: #ffffff; text-decoration: none; font-weight: bold;">Connexion</a>
+            {% endif %}
+        </div>
+    </nav>
+<div class="container">
+    <!-- Partie 1 : Upload -->
+    <div class="section">
+        <h2>Charger des Fichiers et Tendances</h2>
+        <div class="tools__container">
+            <div class="tools__item">
+                <a href="{% url 'excel' %}">
+                    <h3>Fichier Excel</h3>
+                </a>
+            </div>
+            <div class="tools__item">
+                <a href="{% url 'csv' %}">
+                    <h3>Fichier CSV</h3>
+                </a>
+            </div>
+            <div class="tools__item">
+                <a href="{% url 'Calcules' %}">
+                    <h3>Tendances Centrales/Variabilité</h3>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Partie 2 : Lois -->
+    <div class="section">
+        <h2>Les lois de probabilités</h2>
+        <div class="tools__container">
+            <div class="tools__item">
+                <a href="{% url 'Bernoulli' %}">
+                    <h3>Bernoulli</h3>
+                </a>
+            </div>
+            <div class="tools__item">
+                <a href="{% url 'Binomiale' %}">
+                    <h3>Binomiale</h3>
+                </a>
+            </div>
+            <div class="tools__item">
+                <a href="{% url 'Uniforme' %}">
+                    <h3>Uniforme</h3>
+                </a>
+            </div>
+            <div class="tools__item">
+                <a href="{% url 'Poisson' %}">
+                    <h3>Poisson</h3>
+                </a>
+            </div>
+            <div class="tools__item">
+                <a href="{% url 'Normale' %}">
+                    <h3>Normale Continue</h3>
+                </a>
+            </div>
+            <div class="tools__item">
+                <a href="{% url 'Exponentielle' %}">
+                    <h3>Exponentielle</h3>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Partie 3 : Tests -->
+    <div class="section">
+        <h2>Statistique inférentielles</h2>
+        <div class="tools__container">
+            <div class="tools__item">
+                <a href="{% url 'inferentielles' %}">
+                    <h3>Tests Statistiques</h3>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

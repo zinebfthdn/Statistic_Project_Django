@@ -1,0 +1,12 @@
+Django==4.2.5
+pandas==1.5.3
+numpy==1.24.4
+matplotlib==3.7.2
+seaborn==0.12.2
+plotly==5.15.0
+scipy==1.11.2
+statsmodels==0.14.0
+django-crispy-forms==2.0
+django-bootstrap4==22.3
+openpyxl==3.1.2
+requests==2.31.0

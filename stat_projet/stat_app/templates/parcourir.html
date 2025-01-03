@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parcourir les données</title>
+  <style>
+    /* Styles généraux */
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f7f9fc; /* Fond clair pour une meilleure lisibilité */
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Conteneur principal */
+    .container {
+        width: 70%;
+        margin: 0 auto;
+        padding: 40px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        margin-top: 40px;
+    }
+
+    /* Titre principal */
+    h1 {
+        font-size: 2rem;
+        color: #2c3e50;
+        text-align: center;
+        margin-bottom: 30px;
+        font-weight: bold;
+    }
+
+    /* Retour à l'accueil */
+    .back-button {
+        text-decoration: none;
+        font-size: 1rem;
+        color: #2980b9;
+        margin-bottom: 20px;
+        display: inline-block;
+        padding: 10px 15px;
+        border-radius: 5px;
+        background-color: #f4f6f9;
+        transition: background-color 0.3s;
+    }
+
+    .back-button:hover {
+        background-color: #bdc3c7;
+    }
+
+    /* Formulaire */
+    label {
+        font-size: 1rem;
+        margin-bottom: 10px;
+        display: block;
+        color: #555;
+    }
+
+    input[type="text"], input[type="number"], select {
+        width: 100%;
+        padding: 12px;
+        font-size: 1rem;
+        border: 2px solid #bdc3c7;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        outline: none;
+        transition: border-color 0.3s;
+    }
+
+    input[type="text"]:focus, input[type="number"]:focus, select:focus {
+        border-color: #2980b9;
+    }
+
+    input[type="submit"], button {
+        padding: 12px;
+        font-size: 1.2rem;
+        background-color: #2980b9;
+        border: 2px solid #2980b9;
+        color: white;
+        border-radius: 6px;
+        width: 30%;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    input[type="submit"]:hover, button:hover {
+        background-color: #3498db;
+    }
+
+    /* Résultats */
+    .results {
+        background-color: #ecf0f1;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        margin-top: 30px;
+        text-align: left;
+    }
+
+    .results h2 {
+        color: #2980b9;
+        font-size: 1.6rem;
+        margin-bottom: 15px;
+    }
+
+    .results table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .results table th, .results table td {
+        padding: 12px;
+        text-align: center;
+        border: 1px solid #ddd;
+        font-size: 1.1rem;
+    }
+
+    .results table th {
+        background-color: #2980b9;
+        color: white;
+    }
+
+    .results table td {
+        background-color: #ecf0f1;
+    }
+
+    .results table tr:nth-child(even) td {
+        background-color: #f7f9fc;
+    }
+
+    .results table tr:hover td {
+        background-color: #dfe6e9;
+    }
+
+    /* Alertes */
+    .alert {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 10px;
+        margin-top: 15px;
+        border-radius: 5px;
+        border: 1px solid #f5c6cb;
+    }
+
+    .alert i {
+        cursor: pointer;
+        color: #721c24;
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+        }
+
+        .results h2 {
+            font-size: 1.4rem;
+        }
+    }
+</style>
+
+</head>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<body>
+    <nav style="background-color: #2c3e50; color: #ffffff; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0; color: #ffffff;">Statistiques et Tests</h3>
+        <div>
+            <a href="{% url 'app' %}" style="color: #ffffff; text-decoration: none; margin-right: 20px; font-weight: bold;">Home</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}" style="color: #ffffff; text-decoration: none; font-weight: bold;">Déconnexion</a>
+            {% else %}
+                <a href="{% url 'login' %}" style="color: #ffffff; text-decoration: none; font-weight: bold;">Connexion</a>
+            {% endif %}
+        </div>
+    </nav>
+    <div class="container">
+
+        <br><br><br><br>
+
+        <!-- Partie 2 : Formulaire pour parcourir les données -->
+        <div class="section">
+            <h2>Parcourir les données</h2>
+            <form method="post" action="{% url 'parcourir_chart' %}" enctype="multipart/form-data" id="form_id">
+                {% csrf_token %}
+
+                <!-- Affichage des erreurs -->
+                {% if error_message %}
+                <div class="alert">
+                    <i class="fas fa-times" onclick="this.parentElement.style.display='none';"></i>
+                    {{ error_message }}
+                </div>
+                {% endif %}
+
+                <!-- Sélection du type de parcours -->
+                <select id="parcourir_chart" name="parcourir_chart">
+                    <option value="Nothing">Select...</option>
+                    <option value="FindElem">Recherche d'un élément</option>
+                    <option value="Slicing">Slicing</option>
+                </select>
+
+                <!-- Sélection de la colonne -->
+                <select id="col_name1" name="col_name1">
+                    {% for col in column_names %}
+                        <option>{{ col }}</option>
+                    {% endfor %}
+                </select>
+
+                <!-- Entrée du numéro de la ligne -->
+                <input type="number" placeholder="Le numéro de la ligne :" id="RowNumb" name="RowNumb" min="0" max="{{ max_row }}" step="1">
+
+                <!-- Sélection des options de parcours de lignes -->
+                <select id="parcourir_rows" name="parcourir_rows">
+                    <option value="Nothing">Browse rows</option>
+                    <option value="NbrOfRowsTop">Number of rows from the top</option>
+                    <option value="NbrOfRowsBottom">Number of rows from the bottom</option>
+                    <option value="FromRowToRow">From x row to y row</option>
+                </select>
+
+                <!-- Entrée du nombre de lignes à afficher -->
+                <input type="number" placeholder="Number of rows starting from the Top" id="Head" name="Head" min="0" max="{{ max_row }}" step="1">
+                <input type="number" placeholder="Number of rows starting from the Bottom" id="Tail" name="Tail" min="0" max="{{ max_row }}" step="1">
+                <input type="number" placeholder="From row number " id="FromRowNumb" name="FromRowNumb" min="0" max="{{ max_row }}" step="1">
+                <input type="number" placeholder="To the row number " id="ToRowNumb" name="ToRowNumb" min="0" max="{{ max_row }}" step="1">
+
+                <!-- Sélection des colonnes -->
+                {% for col in column_names %}
+                    <div class="form-check form-check-inline" id="colonne">
+                        <input class="form-check-input" type="checkbox" name="selected_columns" value="{{ col }}" id="{{ col }}"/>
+                        <label class="form-check-label" for="{{ col }}">{{ col }}</label>
+                    </div>
+                {% endfor %}
+
+                <!-- Sélection de la colonne numérique -->
+                <select name="numeric_column" id="numeric_column" placeholder="Colonne Numérique :">
+                    {% for col in column_names %}
+                    <option value="{{ col }}">{{ col }}</option>
+                    {% endfor %}
+                </select>
+
+                
+
+               
+
+                <!-- Bouton de soumission -->
+                <button type="submit">Envoyer</button>
+            </form>
+        </div>
+
+        <div class="card">
+            {% if df %}
+                <h3>Les données :</h3>
+                <div style="overflow-x: auto; overflow-y: auto; height: 550px;">
+                    <table>
+                        {{ df|safe }}
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="specific-search-result">
+            {% if resultat is not None %}
+                <h3>Résultat de la recherche spécifique :</h3>
+                <p>Valeur pour la colonne {{ col_name1 }} à la ligne {{ RowNumb }} : {{ resultat }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            // Cacher les listes déroulantes au chargement initial de la page
+            $('#col_name1, #RowNumb, #parcourir_rows, #Head, #Tail, #FromRowNumb, #ToRowNumb, #group_by_column, #numeric_column, #condition, #value, #colonne').hide();
+
+            $('#parcourir_chart').change(function(){
+                var selected_chart = $(this).val();
+                
+                if (selected_chart === 'FindElem') {
+                    $('#col_name1, #RowNumb, #parcourir_rows, #Head, #Tail, #FromRowNumb, #ToRowNumb, #colonne, #numeric_column, #condition, #value').hide();
+                    $('#col_name1, #RowNumb').show();
+                } else if (selected_chart === 'Slicing') {
+                    $('#col_name1, #RowNumb, #parcourir_rows, #Head, #Tail, #FromRowNumb, #ToRowNumb, #colonne, #numeric_column, #condition, #value').hide();
+                    $('#parcourir_rows').show();
+
+                    $('#parcourir_rows').change(function(){
+                        var selected_chart_rows = $(this).val();
+                        if (selected_chart_rows === 'NbrOfRowsTop') {
+                            $('#Head, #colonne').show();
+                        } else if (selected_chart_rows === 'NbrOfRowsBottom') {
+                            $('#Tail, #colonne').show();
+                        } else if (selected_chart_rows === 'FromRowToRow') {
+                            $('#FromRowNumb, #ToRowNumb, #colonne').show();
+                        }
+                    });
+                } 
+            });
+            
+            $('#form_id').submit(function(event) {
+                var selected_chart = $('#parcourir_chart').val();
+                var valueInput = $('#value').val();
+
+                if (selected_chart === 'GroupBy' && !valueInput) {
+                    alert('Veuillez entrer une valeur.');
+                    event.preventDefault(); // Empêche la soumission du formulaire
+                }
+            });
+        });
+    </script>
+</body>
+</html>
